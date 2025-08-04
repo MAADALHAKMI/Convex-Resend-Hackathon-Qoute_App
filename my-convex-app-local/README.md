@@ -2,7 +2,7 @@
 A comprehensive project for sending quotes via email using Convex for data management and Resend for creative and unique email delivery.
 
 🧠 Project Idea
-📌 Full Scenario:
+📌 Full Scenario
 Upon first login:
 The user logs in.
 
@@ -11,7 +11,7 @@ The user is asked to select their favorite character.
 The automatic sending system is activated.
 
 Afterwards:
-⏰ Every day or every two days (to be determined later), a random quote from the favorite character is sent to the user’s email.
+⏰ Every day or every two days (configurable), a random quote from the favorite character is sent to the user’s email.
 
 If the user later enters the app and selects:
 Their current mood (e.g., sad, happy…)
@@ -27,7 +27,7 @@ Convex – Database and backend functions
 
 Resend – Email sending service
 
-React Email – For designing responsive and dynamic emails
+React Email (@react-email/components) – For designing responsive and dynamic emails
 
 Webhooks – For handling event-based triggers
 
@@ -35,9 +35,10 @@ TypeScript – Programming language
 
 Cron Jobs – For scheduled automatic sending
 
-
-
-## 📁 هيكل المشروع
+📁 Project Structure
+graphql
+Copy
+Edit
 convex/
 ├── schema.ts                 # Database schema definitions
 ├── mutations/                # Mutation functions (for data changes)
@@ -53,12 +54,12 @@ convex/
 │   ├── sendMoodBasedQuoteLogic.ts
 │   └── sendQuoteEmailLogic.ts
 ├── cron.ts                   # Cron jobs for scheduled sending
-├── http.ts                   # HTTP related functions (API handlers)
+├── http.ts                   # HTTP related functions (API handlers & webhooks)
 └── index.ts                  # Export all functions
-
-
-### ⏰ **Cron Jobs** (`cron.ts`)
-
+⏰ Cron Jobs (cron.ts)
+ts
+Copy
+Edit
 export async function sendMoodBasedQuoteLogic(
   ctx: { db: DatabaseReader; scheduler: any },
   userId: Id<"users">,
@@ -80,34 +81,40 @@ export async function sendMoodBasedQuoteLogic(
   if (quotes.length === 0) throw new Error("No quotes found");
 
   const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-//// 300_000 is 5 muints
-  await ctx.scheduler.runAfter(100    , internal.actions.sendEmailAction.sendMoodQuoteEmail, {
-    email: user.email,
-    characterName: character.name,
-    quoteText: randomQuote.text,
-    mood,
-    userId,
-    characterId,
-  });
+
+  // 300_000 ms = 5 minutes (can be adjusted as needed)
+  await ctx.scheduler.runAfter(
+    100, // Delay before sending (adjustable)
+    internal.actions.sendEmailAction.sendMoodQuoteEmail,
+    {
+      email: user.email,
+      characterName: character.name,
+      quoteText: randomQuote.text,
+      mood,
+      userId,
+      characterId,
+    }
+  );
 
   return { success: true };
 }
+💡 Tip: You can change the delay value in runAfter() to schedule the mood-based email sending at your desired time (e.g., 5 minutes, 15 minutes, etc.).
 
 🎨 Creative Email Sending
-✨ Unique Features
-
-     "@react-email/components";  
+✨ Unique Features:
+Responsive HTML email design with RTL support.
 
 Dynamic colors and emojis based on mood.
 
-Personalized signatures and greetings based on the time of day.
+Personalized signatures and greetings based on time of day.
 
 Custom email headers for user tracking.
 
-Daily Quote Template
+Daily Quote Template:
+
 Beautiful gradient background
 
-Smart greeting (Good morning/Good evening)
+Smart greeting (Good morning / Good evening)
 
 "Quote of the Day" badge
 
@@ -115,28 +122,33 @@ Eye-catching quote design
 
 Creative signature
 
-Mood-Based Email Template
+Mood-Based Email Template:
+
 Gradient colors matching mood
 
 Mood emoji
 
 Personalized message design
 
+📝 Supported Moods
+happy - Happy 😊
 
-### Supported Moods
+sad - Sad 😢
 
-* `happy` - Happy 😊
-* `sad` - Sad 😢
-* `excited` - Excited 🤩
-* `calm` - Calm 😌
-* `motivated` - Motivated 💪
+excited - Excited 🤩
 
-## 📊 Monitoring
+calm - Calm 😌
 
-* All email sending operations are logged in `emailLogs`.
-* The sending history can be tracked for each user.
-* Clear error messages in Arabic.
-* Success and failure statistics for cron jobs.
+motivated - Motivated 💪
+
+📊 Monitoring
+All email sending operations are logged in emailLogs.
+
+The sending history can be tracked for each user.
+
+Clear error messages in Arabic.
+
+Success and failure statistics for cron jobs.
 
 ## 🚀 Future Development
 
