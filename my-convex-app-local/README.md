@@ -1,324 +1,160 @@
-# 📬 Quote Sender - Convex Backend
+📬 Quote Sender - Convex Backend
+A comprehensive project for sending quotes via email using Convex for data management and Resend for creative and unique email delivery.
 
-مشروع متكامل لإرسال الاقتباسات عبر البريد الإلكتروني باستخدام **Convex** لإدارة البيانات و**Resend** لإرسال البريد الإلكتروني بطريقة إبداعية وفريدة.
+🧠 Project Idea
+📌 Full Scenario:
+Upon first login:
+The user logs in.
 
-## 🧠 فكرة المشروع
+The user is asked to select their favorite character.
 
-### 📌 **السيناريو الكامل:**
+The automatic sending system is activated.
 
-#### **عند تسجيل الدخول لأول مرة:**
-1. يسجل دخوله
-2. يُطلب منه اختيار شخصيته المفضلة
-3. يُفعّل نظام الإرسال التلقائي
+Afterwards:
+⏰ Every day or every two days (to be determined later), a random quote from the favorite character is sent to the user’s email.
 
-#### **بعدها:**
-- ⏰ **كل يوم أو كل يومين** (نحدده لاحقًا)، يتم إرسال اقتباس عشوائي من الشخصية المفضلة إلى بريده الإلكتروني.
+If the user later enters the app and selects:
+Their current mood (e.g., sad, happy…)
 
-#### **إذا دخل لاحقًا للتطبيق واختار:**
-- موده الحالي (مثلاً: حزين، سعيد…)
-- وشخصية ترد عليه في هذا المزاج
-- 📩 **يتم إرسال إيميل فوري** من هذه الشخصية بناءً على المود.
+A character to respond to this mood
 
-⚠️ **لكن:** إرسال الاقتباسات اليومية من الشخصية المفضلة يبقى مستمرًا ولا يتوقف.
+📩 An immediate email is sent from that character based on the mood.
 
-## 🛠️ التقنيات المستخدمة
+⚠️ Note: Daily quotes from the favorite character continue without interruption.
 
-- **Convex** - قاعدة البيانات والوظائف الخلفية
-- **Resend** - إرسال البريد الإلكتروني بطريقة إبداعية
-- **TypeScript** - لغة البرمجة
-- **bcryptjs** - تشفير كلمات المرور
-- **Cron Jobs** - الإرسال التلقائي
+🛠️ Technologies Used
+Convex – Database and backend functions
+
+Resend – Email sending service
+
+React Email – For designing responsive and dynamic emails
+
+Webhooks – For handling event-based triggers
+
+TypeScript – Programming language
+
+Cron Jobs – For scheduled automatic sending
+
+
 
 ## 📁 هيكل المشروع
-
-```
 convex/
-├── schema.ts              # تعريف قاعدة البيانات
-├── users.ts               # فانكشنز المستخدمين
-├── characters.ts          # فانكشنز الشخصيات
-├── quotes.ts              # فانكشنز الاقتباسات
-├── emailLogs.ts           # سجلات البريد الإلكتروني
-├── sendEmail.ts           # إرسال البريد بطريقة إبداعية
-├── cron.ts                # Cron Jobs للإرسال التلقائي
-└── index.ts               # تصدير جميع الفانكشنز
-```
+├── schema.ts                 # Database schema definitions
+├── mutations/                # Mutation functions (for data changes)
+│   ├── users.ts
+│   ├── emailLogs.ts
+│   └── usersInternal.ts      # Internal user-related mutations
+├── characters.ts             # Character-related functions
+├── quotes.ts                 # Quote-related functions
+├── emailLogs.ts              # Email logs management
+├── actions/                  # Email sending actions
+│   └── sendEmailAction.ts
+├── logic/                    # Business logic modules
+│   ├── sendMoodBasedQuoteLogic.ts
+│   └── sendQuoteEmailLogic.ts
+├── cron.ts                   # Cron jobs for scheduled sending
+├── http.ts                   # HTTP related functions (API handlers)
+└── index.ts                  # Export all functions
 
-## 🚀 الإعداد والتشغيل
-
-### 1. تثبيت المتطلبات
-
-```bash
-npm install
-npm install bcryptjs
-npm install --save-dev @types/bcryptjs
-```
-
-### 2. إعداد المتغيرات البيئية
-
-أنشئ ملف `.env.local` وأضف:
-
-```env
-# Convex Configuration
-CONVEX_DEPLOY_KEY=your_convex_deploy_key_here
-
-# Resend Email Configuration
-RESEND_API_KEY=your_resend_api_key_here
-```
-
-### 3. تشغيل المشروع
-
-```bash
-# تشغيل Convex محلياً
-npx convex dev
-
-# أو تشغيل مرة واحدة
-npx convex dev --once
-```
-
-## 📋 الفانكشنز المتاحة
-
-### 👤 **إدارة المستخدمين** (`users.ts`)
-
-```typescript
-// تسجيل مستخدم جديد
-const userId = await mutation.users.register({
-  firstName: "أحمد",
-  lastName: "محمد",
-  email: "ahmed@example.com",
-  password: "password123",
-  favoriteCharacter: characterId
-});
-
-// تسجيل الدخول
-const user = await mutation.users.login({
-  email: "ahmed@example.com",
-  password: "password123"
-});
-
-// تغيير كلمة المرور
-await mutation.users.changePassword({
-  userId,
-  currentPassword: "password123",
-  newPassword: "newpassword123"
-});
-
-// تحديث الاسم
-await mutation.users.updateName({
-  userId,
-  firstName: "أحمد الجديد",
-  lastName: "محمد الجديد"
-});
-
-// اختيار الشخصية المفضلة
-await mutation.users.selectFavoriteCharacter({
-  userId,
-  characterId: "character_id"
-});
-
-// اختيار المزاج والشخصية (ترسل إيميل فوراً)
-await mutation.users.selectMoodAndCharacter({
-  userId,
-  mood: "happy",
-  characterId: "character_id"
-});
-
-// تفعيل/إيقاف الإرسال اليومي
-await mutation.users.enableDailyQuotes({ userId });
-await mutation.users.disableDailyQuotes({ userId });
-```
-
-### 🎭 **إدارة الشخصيات** (`characters.ts`)
-
-```typescript
-// إنشاء شخصية جديدة
-const characterId = await mutation.characters.create({
-  name: "ألبرت أينشتاين",
-  description: "عالم فيزياء مشهور"
-});
-
-// الحصول على جميع الشخصيات
-const characters = await query.characters.list();
-
-// الحصول على شخصية بالاسم
-const character = await query.characters.getByName({ name: "ألبرت أينشتاين" });
-```
-
-### 💬 **إدارة الاقتباسات** (`quotes.ts`)
-
-```typescript
-// إنشاء اقتباس جديد
-const quoteId = await mutation.quotes.create({
-  characterId: "character_id",
-  text: "الحياة مثل ركوب الدراجة، لكي تحافظ على توازنك يجب أن تستمر في التحرك",
-  mood: "inspired"
-});
-
-// الحصول على اقتباسات حسب الشخصية والمزاج
-const quotes = await query.quotes.getByCharacterAndMood({
-  characterId: "character_id",
-  mood: "happy"
-});
-
-// الحصول على اقتباس عشوائي
-const randomQuote = await query.quotes.getRandomByCharacterAndMood({
-  characterId: "character_id",
-  mood: "inspired"
-});
-```
-
-### 📧 **إرسال البريد الإلكتروني** (`sendEmail.ts`)
-
-```typescript
-// إرسال اقتباس يومي من الشخصية المفضلة
-const result = await action.sendEmail.sendDailyQuoteToUser({
-  userId: "user_id"
-});
-
-// إرسال اقتباس حسب المزاج والشخصية
-const result = await action.sendEmail.sendMoodQuoteToUser({
-  userId: "user_id",
-  mood: "inspired",
-  characterId: "character_id"
-});
-```
 
 ### ⏰ **Cron Jobs** (`cron.ts`)
 
-المشروع يتضمن 3 cron jobs مختلفة:
+export async function sendMoodBasedQuoteLogic(
+  ctx: { db: DatabaseReader; scheduler: any },
+  userId: Id<"users">,
+  characterId: Id<"characters">,
+  mood: string
+) {
+  const user = await ctx.db.get(userId);
+  if (!user?.email) throw new Error("User not found or missing email");
 
-1. **كل يوم في الساعة 9 صباحاً** - `sendDailyQuotes`
-2. **كل يومين في الساعة 10 صباحاً** - `sendBiDailyQuotes`
-3. **كل يوم في الساعة 7 صباحاً** - `sendMorningQuotes`
+  const character = await ctx.db.get(characterId);
+  if (!character) throw new Error("Character not found");
 
-## 🎨 **الطريقة الإبداعية لإرسال البريد**
+  const quotes = await ctx.db
+    .query("quotes")
+    .filter((q) => q.eq(q.field("characterId"), characterId))
+    .filter((q) => q.eq(q.field("mood"), mood))
+    .collect();
 
-### ✨ **ميزات فريدة:**
+  if (quotes.length === 0) throw new Error("No quotes found");
 
-1. **تصميم HTML متجاوب** باللغة العربية مع دعم RTL
-2. **ألوان ديناميكية** حسب المزاج
-3. **إيموجي ذكية** لكل مزاج
-4. **توقيع إبداعي** حسب نوع البريد
-5. **Headers مخصصة** للبريد الإلكتروني
-6. **توقيت ذكي** للتحية (صباح الخير، مساء الخير)
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+//// 300_000 is 5 muints
+  await ctx.scheduler.runAfter(100    , internal.actions.sendEmailAction.sendMoodQuoteEmail, {
+    email: user.email,
+    characterName: character.name,
+    quoteText: randomQuote.text,
+    mood,
+    userId,
+    characterId,
+  });
 
-### 🎨 **قالب البريد اليومي:**
-- خلفية متدرجة جميلة
-- تحية ذكية حسب الوقت
-- شارة "اقتباس اليوم"
-- تصميم مميز للاقتباس
-- توقيع إبداعي
+  return { success: true };
+}
 
-### 💭 **قالب البريد حسب المزاج:**
-- ألوان متدرجة حسب المزاج
-- إيموجي المزاج
-- تصميم مخصص
-- رسالة شخصية
+🎨 Creative Email Sending
+✨ Unique Features
 
-## 🔧 التخصيص
+     "@react-email/components";  
 
-### إضافة شخصيات جديدة
+Dynamic colors and emojis based on mood.
 
-```typescript
-await mutation.characters.create({
-  name: "شخصية جديدة",
-  description: "وصف الشخصية"
-});
-```
+Personalized signatures and greetings based on the time of day.
 
-### إضافة اقتباسات جديدة
+Custom email headers for user tracking.
 
-```typescript
-await mutation.quotes.create({
-  characterId: "character_id",
-  text: "نص الاقتباس",
-  mood: "happy"
-});
-```
+Daily Quote Template
+Beautiful gradient background
 
-### المزاجات المدعومة
+Smart greeting (Good morning/Good evening)
 
-- `happy` - سعيد 😊
-- `sad` - حزين 😢
-- `excited` - متحمس 🤩
-- `calm` - هادئ 😌
-- `motivated` - متحفز 💪
-- `relaxed` - مسترخي 😴
-- `inspired` - ملهم ✨
-- `grateful` - ممتن 🙏
-- `optimistic` - متفائل 🌈
-- `peaceful` - مسالم 🕊️
-- `energetic` - نشيط ⚡
-- `thoughtful` - متفكر 🤔
-- `joyful` - مبتهج 🎉
-- `serene` - هادئ 🌿
-- `determined` - مصمم 🔥
-- `anxious` - قلق 😰
-- `confident` - واثق 😎
-- `curious` - فضولي 🤓
-- `playful` - مرح 😄
-- `reflective` - تأملي 🧘
+"Quote of the Day" badge
 
-## 🛡️ الأمان
+Eye-catching quote design
 
-- تشفير كلمات المرور باستخدام bcrypt
-- التحقق من وجود المستخدم قبل إرسال البريد
-- التحقق من وجود المزاج والشخصية المفضلة
-- معالجة الأخطاء بشكل مناسب
-- تسجيل جميع عمليات الإرسال
+Creative signature
 
-## 📊 المراقبة
+Mood-Based Email Template
+Gradient colors matching mood
 
-- جميع عمليات الإرسال تُسجل في `emailLogs`
-- يمكن تتبع تاريخ الإرسال لكل مستخدم
-- رسائل خطأ واضحة باللغة العربية
-- إحصائيات النجاح والفشل في cron jobs
+Mood emoji
 
-## 🚀 التطوير المستقبلي
+Personalized message design
 
-- [ ] إضافة نظام مصادقة متقدم
-- [ ] إضافة إعدادات تخصيص للمستخدمين
-- [ ] إضافة إحصائيات مفصلة
-- [ ] دعم إرسال البريد بجدولة مخصصة
-- [ ] إضافة واجهة إدارية
-- [ ] دعم إرسال البريد بالصوت
-- [ ] إضافة اقتباسات تفاعلية
 
-## 📞 الدعم
+### Supported Moods
 
-للمساعدة أو الاستفسارات، يمكنك:
-- فتح issue في GitHub
-- مراجعة وثائق Convex: https://docs.convex.dev
-- مراجعة وثائق Resend: https://resend.com/docs
+* `happy` - Happy 😊
+* `sad` - Sad 😢
+* `excited` - Excited 🤩
+* `calm` - Calm 😌
+* `motivated` - Motivated 💪
+
+## 📊 Monitoring
+
+* All email sending operations are logged in `emailLogs`.
+* The sending history can be tracked for each user.
+* Clear error messages in Arabic.
+* Success and failure statistics for cron jobs.
+
+## 🚀 Future Development
+
+* [ ] Add an advanced authentication system.
+* [ ] Add customization settings for users.
+* [ ] Add detailed usage statistics.
+* [ ] Support scheduled email sending.
+* [ ] Add an admin interface.
+* [ ] Support voice-enabled email sending.
+* [ ] Add interactive quotes.
+
+## 📞 Support
+
+* Review Convex documentation: [https://docs.convex.dev](https://docs.convex.dev)
+* Review Resend documentation: [https://resend.com/docs](https://resend.com/docs)
 
 ---
 
 **ملاحظة**: تأكد من إعداد `RESEND_API_KEY` بشكل صحيح لتفعيل إرسال البريد الإلكتروني.
 
-## 🎯 **كيفية الاستخدام في Frontend:**
-
-```typescript
-import { useMutation, useQuery } from "convex/react";
-import { api } from "../convex/_generated/api";
-
-// تسجيل الدخول
-const login = useMutation(api.users.login);
-const user = await login({ email: "user@example.com", password: "password" });
-
-// اختيار الشخصية المفضلة
-const selectFavorite = useMutation(api.users.selectFavoriteCharacter);
-await selectFavorite({ userId: user.id, characterId: "character_id" });
-
-// اختيار المزاج والشخصية (ترسل إيميل فوراً)
-const selectMood = useMutation(api.users.selectMoodAndCharacter);
-await selectMood({ 
-  userId: user.id, 
-  mood: "inspired", 
-  characterId: "character_id" 
-});
-
-// الحصول على الشخصيات
-const characters = useQuery(api.characters.list);
-
-// الحصول على الاقتباسات
-const quotes = useQuery(api.quotes.getByCharacter, { characterId: "character_id" });
 ``` 
