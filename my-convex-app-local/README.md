@@ -40,22 +40,22 @@ graphql
 Copy
 Edit
 convex/
-├── schema.ts                 # Database schema definitions
-├── mutations/                # Mutation functions (for data changes)
+├── schema.ts               
+├── mutations/               
 │   ├── users.ts
 │   ├── emailLogs.ts
-│   └── usersInternal.ts      # Internal user-related mutations
-├── characters.ts             # Character-related functions
-├── quotes.ts                 # Quote-related functions
-├── emailLogs.ts              # Email logs management
-├── actions/                  # Email sending actions
+│   └── usersInternal.ts      
+├── characters.ts             
+├── quotes.ts                
+├── emailLogs.ts              
+├── actions/                  
 │   └── sendEmailAction.ts
-├── logic/                    # Business logic modules
+├── logic/                    
 │   ├── sendMoodBasedQuoteLogic.ts
 │   └── sendQuoteEmailLogic.ts
-├── cron.ts                   # Cron jobs for scheduled sending
-├── http.ts                   # HTTP related functions (API handlers & webhooks)
-└── index.ts                  # Export all functions
+├── cron.ts                   
+├── http.ts                    
+└── index.ts                  
 ⏰ Cron Jobs (cron.ts)
 ts
 Copy
@@ -101,34 +101,39 @@ export async function sendMoodBasedQuoteLogic(
 💡 Tip: You can change the delay value in runAfter() to schedule the mood-based email sending at your desired time (e.g., 5 minutes, 15 minutes, etc.).
 
 🎨 Creative Email Sending
-✨ Unique Features:
-Responsive HTML email design with RTL support.
+ Unique Features
 
-Dynamic colors and emojis based on mood.
+Innovative Webhooks Usage – Provide users with detailed stats about all the emails they’ve received, including how many they’ve opened.
 
-Personalized signatures and greetings based on time of day.
+React Email (@react-email/components) – For designing responsive and dynamic emails.
 
-Custom email headers for user tracking.
+Dynamic Colors & Emojis – Change automatically based on the user’s mood.
 
-Daily Quote Template:
+Personalized Signatures & Greetings – Adapt to the time of day (e.g., Good morning / Good evening).
 
-Beautiful gradient background
+Custom Email Headers – For advanced user tracking.
 
-Smart greeting (Good morning / Good evening)
+📅 Daily Quote Template
 
-"Quote of the Day" badge
+Beautiful gradient background.
 
-Eye-catching quote design
+Smart greeting based on time of day.
 
-Creative signature
+“Quote of the Day” badge.
 
-Mood-Based Email Template:
+Eye-catching quote design.
 
-Gradient colors matching mood
+Creative signature.
 
-Mood emoji
+🎭 Mood-Based Email Template
 
-Personalized message design
+Gradient colors that match the selected mood.
+
+Mood emoji for a personal touch.
+
+Customized message design for each mood.
+
+
 
 📝 Supported Moods
 happy - Happy 😊
